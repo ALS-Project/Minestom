@@ -437,9 +437,10 @@ public class Player extends LivingEntity implements CommandSender {
         callEvent(PlayerTickEvent.class, playerTickEvent);
 
         // Multiplayer sync
-        final boolean syncCooldown = CooldownUtils.hasCooldown(time, lastPlayerSynchronizationTime,
-                TimeUnit.TICK, getPlayerSynchronizationTickDelay(viewers.size()));
-        if (!viewers.isEmpty() && !syncCooldown) {
+        /*final boolean syncCooldown = CooldownUtils.hasCooldown(time, lastPlayerSynchronizationTime,
+                TimeUnit.TICK, getPlayerSynchronizationTickDelay(viewers.size()));*/
+
+        if (!viewers.isEmpty()) {
             this.lastPlayerSynchronizationTime = time;
 
             final boolean positionChanged = position.getX() != lastPlayerSyncX ||

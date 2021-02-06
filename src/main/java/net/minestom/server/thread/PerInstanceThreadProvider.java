@@ -2,22 +2,28 @@ package net.minestom.server.thread;
 
 import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import net.minestom.server.MinecraftServer;
+import net.minestom.server.entity.Player;
+import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.utils.chunk.ChunkUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Separates work between instance (1 instance = 1 thread execution).
  */
 public class PerInstanceThreadProvider extends ThreadProvider {
 
-    private final Map<Instance, LongSet> instanceChunkMap = new HashMap<>();
+    private final Object2ObjectArrayMap<Instance, LongSet> instanceChunkMap = new Object2ObjectArrayMap<>();
+
+    private static final AtomicInteger vanillaTick = new AtomicInteger();
+    long lastNormalUpdate = 0;
 
     @Override
     public void onInstanceCreate(@NotNull Instance instance) {
@@ -52,10 +58,33 @@ public class PerInstanceThreadProvider extends ThreadProvider {
         List<Future<?>> futures = new ArrayList<>();
 
         instanceChunkMap.forEach((instance, chunkIndexes) -> futures.add(pool.submit(() -> {
+            boolean updateVanillaTick = vanillaTick.getAndIncrement() >= (MinecraftServer.TICK_PER_SECOND / MinecraftServer.VANILLA_TICK_PER_SECOND);
             // Tick instance
-            updateInstance(instance, time);
+            if (updateVanillaTick)
+                updateInstance(instance, time);
             // Tick chunks
-            chunkIndexes.forEach((long chunkIndex) -> processChunkTick(instance, chunkIndex, time));
+            chunkIndexes.forEach((long chunkIndex) -> {
+                //TODO: ALS CHANGE
+
+                final int chunkX = ChunkUtils.getChunkCoordX(chunkIndex);
+                final int chunkZ = ChunkUtils.getChunkCoordZ(chunkIndex);
+
+                final Chunk chunk = instance.getChunk(chunkX, chunkZ);
+
+                if (!ChunkUtils.isLoaded(chunk))
+                    return;
+
+                if (updateVanillaTick) {
+                    vanillaTick.set(0);
+                    //Update Chunk
+                    updateChunk(instance, chunk, time);
+
+                    //Update Entities
+                    updateEntities(instance, chunk, time);
+                } else {
+                    conditionalEntityUpdate(instance, chunk, time, value -> value instanceof Player);
+                }
+            });
         })));
         return futures;
     }

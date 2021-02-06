@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class CustomBlockSample extends CustomBlock {
 
-    private static final UpdateOption UPDATE_OPTION = new UpdateOption(3, TimeUnit.TICK);
+    private static final UpdateOption UPDATE_OPTION = new UpdateOption(1, TimeUnit.TICK);
 
     public CustomBlockSample() {
         super(Block.GOLD_BLOCK, "custom_block");
@@ -42,7 +42,7 @@ public class CustomBlockSample extends CustomBlock {
     @Override
     public void update(@NotNull Instance instance, @NotNull BlockPosition blockPosition, @Nullable Data data) {
         final short blockId = instance.getBlockStateId(blockPosition);
-        //instance.refreshBlockStateId(blockPosition, (short) (blockId+1));
+        instance.refreshBlockStateId(blockPosition, (short) (blockId+1));
     }
 
     @Nullable

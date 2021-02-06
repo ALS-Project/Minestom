@@ -86,7 +86,9 @@ public final class MinecraftServer {
 
     // Config
     // Can be modified at performance cost when increased
-    public static final int TICK_PER_SECOND = 20;
+    //TODO: ALS CHANGE
+    public final static int VANILLA_TICK_PER_SECOND = 20;
+    public static int TICK_PER_SECOND = 60;
     private static final int MS_TO_SEC = 1000;
     public static final int TICK_MS = MS_TO_SEC / TICK_PER_SECOND;
 

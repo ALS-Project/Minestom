@@ -53,7 +53,7 @@ public class PlayerInit {
         NoiseTestGenerator noiseTestGenerator = new NoiseTestGenerator();
         instanceContainer = instanceManager.createInstanceContainer(DimensionType.OVERWORLD);
         instanceContainer.enableAutoChunkLoad(true);
-        instanceContainer.setChunkGenerator(chunkGeneratorDemo);
+        instanceContainer.setChunkGenerator(noiseTestGenerator);
 
         inventory = new Inventory(InventoryType.CHEST_1_ROW, "Test inventory");
         /*inventory.addInventoryCondition((p, slot, clickType, inventoryConditionResult) -> {
