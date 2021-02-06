@@ -56,7 +56,7 @@ public class PerInstanceThreadProvider extends ThreadProvider {
         List<Future<?>> futures = new ArrayList<>();
 
         instanceChunkMap.forEach((instance, chunkIndexes) -> futures.add(pool.submit(() -> {
-            boolean updateVanillaTick = vanillaTick.getAndIncrement() > (MinecraftServer.TICK_PER_SECOND / MinecraftServer.VANILLA_TICK_PER_SECOND);
+            boolean updateVanillaTick = vanillaTick.getAndIncrement() > ((MinecraftServer.TICK_PER_SECOND / MinecraftServer.VANILLA_TICK_PER_SECOND) - 1);
             // Tick instance
             if (updateVanillaTick)
                 updateInstance(instance, time);
