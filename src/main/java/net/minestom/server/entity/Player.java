@@ -437,10 +437,10 @@ public class Player extends LivingEntity implements CommandSender {
         callEvent(PlayerTickEvent.class, playerTickEvent);
 
         // Multiplayer sync
-        /*final boolean syncCooldown = CooldownUtils.hasCooldown(time, lastPlayerSynchronizationTime,
-                TimeUnit.TICK, getPlayerSynchronizationTickDelay(viewers.size()));*/
+        final boolean syncCooldown = CooldownUtils.hasCooldown(time, lastPlayerSynchronizationTime,
+                TimeUnit.TICK, getPlayerSynchronizationTickDelay(viewers.size()));
 
-        if (!viewers.isEmpty()) {
+        if (!viewers.isEmpty() && !syncCooldown) {
             this.lastPlayerSynchronizationTime = time;
 
             final boolean positionChanged = position.getX() != lastPlayerSyncX ||
@@ -690,7 +690,8 @@ public class Player extends LivingEntity implements CommandSender {
                     final int chunkX = ChunkUtils.getChunkCoordinate((int) spawnPosition.getX());
                     final int chunkZ = ChunkUtils.getChunkCoordinate((int) spawnPosition.getZ());
                     if (chunk.getChunkX() == chunkX &&
-                            chunk.getChunkZ() == chunkZ) {
+                            chunk.getChunkZ() == chunkZ)
+                    {
                         updateViewPosition(chunkX, chunkZ);
                     }
                 }
@@ -736,7 +737,8 @@ public class Player extends LivingEntity implements CommandSender {
      * @param firstSpawn    true if this is the player first spawn
      */
     private void spawnPlayer(@NotNull Instance instance, @Nullable Position spawnPosition,
-                             boolean firstSpawn, boolean updateChunks) {
+                             boolean firstSpawn, boolean updateChunks)
+    {
         this.viewableEntities.forEach(entity -> entity.removeViewer(this));
 
         super.setInstance(instance);
@@ -1091,7 +1093,8 @@ public class Player extends LivingEntity implements CommandSender {
     protected void onAttributeChanged(@NotNull final AttributeInstance attributeInstance) {
         if (attributeInstance.getAttribute().isShared() &&
                 playerConnection != null &&
-                playerConnection.getConnectionState() == ConnectionState.PLAY) {
+                playerConnection.getConnectionState() == ConnectionState.PLAY)
+        {
             playerConnection.sendPacket(getPropertiesPacket());
         }
     }
@@ -1364,7 +1367,8 @@ public class Player extends LivingEntity implements CommandSender {
     }
 
     private void facePosition(@NotNull FacePoint facePoint, @NotNull Position targetPosition,
-                              @Nullable Entity entity, @Nullable FacePoint targetPoint) {
+                              @Nullable Entity entity, @Nullable FacePoint targetPoint)
+    {
         FacePlayerPacket facePlayerPacket = new FacePlayerPacket();
         facePlayerPacket.entityFacePosition = facePoint == FacePoint.EYE ?
                 FacePlayerPacket.FacePosition.EYES : FacePlayerPacket.FacePosition.FEET;
@@ -2284,7 +2288,8 @@ public class Player extends LivingEntity implements CommandSender {
      * @param breakers            the breakers of the block, can be null if {@code this} is the only breaker
      */
     public void setTargetBlock(@NotNull CustomBlock targetCustomBlock, @NotNull BlockPosition targetBlockPosition,
-                               @Nullable Set<Player> breakers) {
+                               @Nullable Set<Player> breakers)
+    {
         this.targetCustomBlock = targetCustomBlock;
         this.targetBlockPosition = targetBlockPosition;
 
@@ -2604,7 +2609,8 @@ public class Player extends LivingEntity implements CommandSender {
          * @param mainHand           the player main hand
          */
         public void refresh(String locale, byte viewDistance, ChatMode chatMode, boolean chatColors,
-                            byte displayedSkinParts, MainHand mainHand) {
+                            byte displayedSkinParts, MainHand mainHand)
+        {
 
             final boolean viewDistanceChanged = !firstRefresh && this.viewDistance != viewDistance;
 
