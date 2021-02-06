@@ -23,7 +23,6 @@ public class PerInstanceThreadProvider extends ThreadProvider {
     private final Object2ObjectArrayMap<Instance, LongSet> instanceChunkMap = new Object2ObjectArrayMap<>();
 
     private static final AtomicInteger vanillaTick = new AtomicInteger();
-    long lastNormalUpdate = 0;
 
     @Override
     public void onInstanceCreate(@NotNull Instance instance) {
@@ -49,7 +48,6 @@ public class PerInstanceThreadProvider extends ThreadProvider {
         final long index = ChunkUtils.getChunkIndex(chunkX, chunkZ);
         // Remove the unloaded chunk from the instance list
         chunkCoordinates.remove(index);
-
     }
 
     @NotNull
@@ -58,7 +56,7 @@ public class PerInstanceThreadProvider extends ThreadProvider {
         List<Future<?>> futures = new ArrayList<>();
 
         instanceChunkMap.forEach((instance, chunkIndexes) -> futures.add(pool.submit(() -> {
-            boolean updateVanillaTick = vanillaTick.getAndIncrement() >= (MinecraftServer.TICK_PER_SECOND / MinecraftServer.VANILLA_TICK_PER_SECOND);
+            boolean updateVanillaTick = vanillaTick.getAndIncrement() > (MinecraftServer.TICK_PER_SECOND / MinecraftServer.VANILLA_TICK_PER_SECOND);
             // Tick instance
             if (updateVanillaTick)
                 updateInstance(instance, time);
